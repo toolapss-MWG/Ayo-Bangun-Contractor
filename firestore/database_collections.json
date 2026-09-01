@@ -1,0 +1,24 @@
+{
+  "collections": [
+    "users",
+    "projects",
+    "materials",
+    "material_variants",
+    "stock_transactions",
+    "stock_balance",
+    "stock_opname",
+    "workers",
+    "attendance",
+    "payroll",
+    "work_targets",
+    "progress_reports",
+    "project_budget",
+    "project_expenses",
+    "purchase_orders",
+    "suppliers",
+    "daily_reports",
+    "project_documents",
+    "notifications",
+    "settings"
+  ]
+}

@@ -65,8 +65,8 @@ class AuthManager {
       mandor: { email: 'mandor@ayobangun.id', password: 'Mandor@12345' }
     };
     const account = accounts[role];
-    if (!account || email !== account.email || password !== account.password) {
-      throw new Error('Login tidak valid');
+    if (account && email !== account.email || account && password !== account.password) {
+      throw new Error('Email atau password tidak sesuai');
     }
     this.currentUser = { email, uid: 'demo-' + Date.now(), name: this.getNameByRole(role) };
     this.currentRole = role;

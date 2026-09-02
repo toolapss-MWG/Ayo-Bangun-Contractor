@@ -1,37 +1,20 @@
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+// Firebase compatibility configuration for browser build
+// Uses Firebase compat SDK loaded from index.html
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyBntT312d0m0VFSPkqiDVUomflUWzcKVB4",
-  authDomain: "ayobangun-contractor.firebaseapp.com",
-  projectId: "ayobangun-contractor",
-  storageBucket: "ayobangun-contractor.firebasestorage.app",
-  messagingSenderId: "1099399042051",
-  appId: "1:1099399042051:web:764118e26a6cc479956a36",
-  measurementId: "G-01F0KBG41D"
+  apiKey: "YOUR_FIREBASE_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+let firebaseApp = null;
+if (typeof firebase !== "undefined") {
+  firebaseApp = firebase.initializeApp(firebaseConfig);
+  window.db = firebase.firestore();
+  window.auth = firebase.auth();
+}
 
-// Collection references
-const COLLECTIONS = {
-  projects: db.collection('projects'),
-  materials: db.collection('materials'),
-  attendance: db.collection('attendance'),
-  reports: db.collection('reports'),
-  obstacles: db.collection('obstacles'),
-  progress: db.collection('progress'),
-  users: db.collection('users'),
-  settings: db.collection('settings')
-};
-
-// Offline persistence
-firebase.firestore().enablePersistence({ synchronizeTabs: true })
-  .catch(err => console.log('Persistence error:', err));
+window.FirebaseConfig = { firebaseConfig, firebaseApp };

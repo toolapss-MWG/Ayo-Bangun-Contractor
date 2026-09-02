@@ -1,9 +1,0 @@
-{
- "users":{"role":"owner|admin|mandor","permissions":[]},
- "projects":{"name":"","description":"","progress":0,"target":""},
- "materials":{"category":"","variant":"","unit":"","volume":0},
- "stock_requests":{"status":"pending|approved|rejected"},
- "material_usage":{"projectId":"","materialId":"","volume":0},
- "attendance":{"date":"","worker":"","status":"present"},
- "daily_targets":{"target":"","actual":""}
-}

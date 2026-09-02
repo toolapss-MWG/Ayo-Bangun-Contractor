@@ -262,3 +262,10 @@ Format laporan otomatis:
 ---
 
 *Built with ❤️ for Indonesian Construction Industry*
+
+
+## V7 Application Layer
+- Owner dashboard foundation
+- Mandor mobile workflow
+- Firebase RBAC schema planning
+- Material/project workflow structure

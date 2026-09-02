@@ -1,12 +1,11 @@
-// ============================================
-// KONFIGURASI FIREBASE - GANTI DENGAN DATA KAMU
-// ============================================
-// 1. Buka https://console.firebase.google.com
-// 2. Buat project baru
-// 3. Tambahkan Web App
-// 4. Copy config di bawah ini
-// ============================================
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
 
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyBntT312d0m0VFSPkqiDVUomflUWzcKVB4",
   authDomain: "ayobangun-contractor.firebaseapp.com",
@@ -17,10 +16,9 @@ const firebaseConfig = {
   measurementId: "G-01F0KBG41D"
 };
 
-// Inisialisasi Firebase
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-const auth = firebase.auth();
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
 
 // Collection references
 const COLLECTIONS = {

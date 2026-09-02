@@ -1,0 +1,11 @@
+{
+ "collections": {
+  "users": {"role":"owner|admin|mandor","permissions":{}},
+  "projects": {"name":"","description":"","progress":0},
+  "materials": {"name":"","category":"","variant":"","unit":"","volume":0},
+  "stock": {"materialId":"","quantity":0,"unit":"","status":"pending"},
+  "material_usage": {"materialId":"","quantity":0,"approved":false},
+  "attendance": {"worker":"","status":"hadir","editedBy":""},
+  "daily_target": {"task":"","target":0,"progress":0}
+ }
+}

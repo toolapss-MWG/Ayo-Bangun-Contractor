@@ -42,7 +42,12 @@ async function doLogin() {
   }
 
   // Simulate login
-  await auth.login(email, pass, currentRole);
+  try {
+    await auth.login(email, pass, currentRole);
+  } catch (e) {
+    showToast('❌ Username/password tidak sesuai');
+    return;
+  }
 
   document.getElementById('loginScreen').classList.add('hidden');
   document.getElementById('mainApp').classList.remove('hidden');

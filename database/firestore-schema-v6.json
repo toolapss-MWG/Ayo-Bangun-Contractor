@@ -1,0 +1,9 @@
+{
+ "users":{"role":"owner|admin|mandor","permissions":[]},
+ "projects":{"name":"","description":"","target":0,"progress":0},
+ "materials":{"category":"","name":"","variant":"","unit":"","volume":0,"stock":0},
+ "stock_requests":{"materialId":"","qty":0,"status":"pending","createdBy":"mandor"},
+ "material_usage":{"projectId":"","materialId":"","qty":0,"date":""},
+ "attendance":{"worker":"","status":"hadir","editable":true},
+ "daily_targets":{"item":"","target":0,"actual":0,"note":""}
+}

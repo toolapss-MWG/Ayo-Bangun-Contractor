@@ -1,0 +1,42 @@
+{
+  "users": [
+    "uid",
+    "name",
+    "role",
+    "projectAccess"
+  ],
+  "projects": [
+    "name",
+    "description",
+    "progress",
+    "assignedMandors"
+  ],
+  "materials": [
+    "name",
+    "category",
+    "unit",
+    "volume",
+    "price"
+  ],
+  "inventory": [
+    "materialId",
+    "stock",
+    "approvalStatus"
+  ],
+  "material_usage": [
+    "projectId",
+    "mandorId",
+    "quantity"
+  ],
+  "attendance": [
+    "userId",
+    "date",
+    "status"
+  ],
+  "daily_target": [
+    "projectId",
+    "date",
+    "target",
+    "progress"
+  ]
+}

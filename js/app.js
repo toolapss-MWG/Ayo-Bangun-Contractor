@@ -41,7 +41,10 @@ async function doLogin() {
     return;
   }
 
-  // Simulate login
+  // V3 account validation
+  const account = window.checkAyoLogin ? window.checkAyoLogin(email, pass) : null;
+  if (!account) { showToast('❌ Username/password salah'); return; }
+  currentRole = account.role || currentRole;
   await auth.login(email, pass, currentRole);
 
   document.getElementById('loginScreen').classList.add('hidden');

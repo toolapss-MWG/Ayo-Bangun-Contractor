@@ -58,3 +58,55 @@ window.checkAyoLogin=function(username,password){
 };
 
 console.log('Ayo Bangun V3 features loaded');
+
+
+// ================= ENHANCED WORKER, PROGRESS & REPORT MODULE =================
+(function(){
+const KEY='ayo_bangun_enhanced';
+function db(){return JSON.parse(localStorage.getItem(KEY)||'{"workers":[],"progress":[],"projects":[]}')}
+function save(x){localStorage.setItem(KEY,JSON.stringify(x)); return x}
+
+window.AyoBangunV3.workers={
+ add(data){let d=db(); data.id=Date.now(); d.workers.push(data); save(d); return data},
+ edit(id,data){let d=db(); d.workers=d.workers.map(x=>x.id==id?{...x,...data}:x); save(d);},
+ remove(id){let d=db(); d.workers=d.workers.filter(x=>x.id!=id); save(d);}
+};
+
+window.AyoBangunV3.progress={
+ add(data){
+   let d=db();
+   d.progress.push({...data,id:Date.now(),createdAt:new Date().toISOString(),updatedBy:(window.auth&&auth.currentUser?.email)||'user'});
+   save(d); FirebaseSync.push('progress',d.progress[d.progress.length-1]); return d.progress[d.progress.length-1];
+ },
+ edit(id,data){
+   let d=db(); d.progress=d.progress.map(x=>x.id==id?{...x,...data,updatedAt:new Date().toISOString()}:x); save(d);
+   let item=d.progress.find(x=>x.id==id); FirebaseSync.push('progress',item);
+ },
+ report(projectId){
+   let items=db().progress.filter(x=>String(x.projectId)==String(projectId));
+   let now=new Date();
+   const avg=(arr)=>arr.length?Math.round(arr.reduce((a,b)=>a+Number(b.percent||0),0)/arr.length):0;
+   return {
+    harian:avg(items.filter(x=>new Date(x.createdAt).toDateString()==now.toDateString())),
+    mingguan:avg(items.filter(x=>(now-new Date(x.createdAt))/86400000<=7)),
+    bulanan:avg(items.filter(x=>new Date(x.createdAt).getMonth()==now.getMonth()&&new Date(x.createdAt).getFullYear()==now.getFullYear())),
+    totalUpdate:items.length
+   };
+ }
+};
+
+window.FirebaseSync={
+ async push(collection,data){
+  if(window.db){
+   try { await db.collection(collection).doc(String(data.id)).set(data); }
+   catch(e){console.warn('Firebase sync gagal',e);}
+  }
+ },
+ async pull(collection){
+  if(!window.db)return [];
+  const snap=await db.collection(collection).get();
+  return snap.docs.map(x=>x.data());
+ }
+};
+
+})();

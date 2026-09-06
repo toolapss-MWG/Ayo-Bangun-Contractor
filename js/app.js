@@ -4,15 +4,24 @@
 
 let currentRole = 'owner';
 let currentPage = 'dashboard';
-let currentProject = { name: 'Perumahan Graha Asri - Blok A', progress: 68 };
+let currentProject = { id: 'p1', name: 'Perumahan Graha Asri - Blok A', progress: 68, workers: 24, location: 'Salatiga' };
+const PROJECT_STORAGE_KEY = 'ayo_bangun_projects';
 let attendanceData = {};
 
 // Demo data
-const DEMO_PROJECTS = [
+let DEMO_PROJECTS = loadProjects();
+
+function loadProjects(){
+  const saved = localStorage.getItem(PROJECT_STORAGE_KEY);
+  if(saved) return JSON.parse(saved);
+  const defaults = [
   { id: 'p1', name: 'Perumahan Graha Asri - Blok A', progress: 68, workers: 24, location: 'Salatiga' },
   { id: 'p2', name: 'Ruko Majapahit Square', progress: 45, workers: 18, location: 'Semarang' },
   { id: 'p3', name: 'Villa Bukit Hijau', progress: 20, workers: 12, location: 'Ungaran' }
-];
+  ];
+  localStorage.setItem(PROJECT_STORAGE_KEY, JSON.stringify(defaults));
+  return defaults;
+}
 
 const DEMO_WORKERS = [
   { id: 'w1', name: 'Sugeng B', role: 'Tukang Batu', group: 'Tukang Batu' },
@@ -136,11 +145,52 @@ function fabAction() {
 
 // ==================== PROJECT ====================
 function showProjectModal() {
+  renderProjectList();
   document.getElementById('projectModal').classList.remove('hidden');
 }
 
 function hideProjectModal() {
   document.getElementById('projectModal').classList.add('hidden');
+}
+
+function renderProjectList(){
+  const container = document.getElementById('projectList');
+  if(!container) return;
+  container.innerHTML = DEMO_PROJECTS.map(p => `
+    <div class="list-item">
+      <div class="icon">🏗️</div>
+      <div class="info" style="flex:1;cursor:pointer" onclick="selectProject('${p.name.replace(/'/g,"\\'")}')">
+        <h4>${p.name}</h4>
+        <p>Progres: ${p.progress || 0}% • ${p.workers || 0} pekerja</p>
+      </div>
+      <button class="btn-small" onclick="editProject('${p.id}')">Edit</button>
+    </div>`).join('');
+}
+
+function addProject(){
+  const name = prompt('Nama proyek baru:');
+  if(!name) return;
+  const project = {id:'p'+Date.now(), name, progress:0, workers:0, location:''};
+  DEMO_PROJECTS.push(project);
+  saveProjects();
+  renderProjectList();
+  showToast('✅ Proyek berhasil ditambahkan');
+}
+
+function editProject(id){
+  const project = DEMO_PROJECTS.find(p=>p.id===id);
+  if(!project) return;
+  const name = prompt('Nama proyek:', project.name);
+  if(name) project.name = name;
+  const progress = prompt('Progress (%):', project.progress);
+  if(progress !== null && !isNaN(progress)) project.progress = Number(progress);
+  saveProjects();
+  renderProjectList();
+  showToast('✅ Proyek berhasil diperbarui');
+}
+
+function saveProjects(){
+  localStorage.setItem(PROJECT_STORAGE_KEY, JSON.stringify(DEMO_PROJECTS));
 }
 
 function selectProject(name) {

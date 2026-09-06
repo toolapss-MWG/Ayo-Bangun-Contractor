@@ -487,18 +487,8 @@
     <div id="projectModal" class="modal-overlay hidden" onclick="if(event.target===this)hideProjectModal()">
       <div class="modal">
         <h3>Pilih Proyek <button class="modal-close" onclick="hideProjectModal()">×</button></h3>
-        <div class="list-item" style="cursor:pointer;" onclick="selectProject('Perumahan Graha Asri - Blok A')">
-          <div class="icon">🏗️</div>
-          <div class="info"><h4>Perumahan Graha Asri - Blok A</h4><p>Progres: 68% • 24 pekerja</p></div>
-        </div>
-        <div class="list-item" style="cursor:pointer;" onclick="selectProject('Ruko Majapahit Square')">
-          <div class="icon">🏢</div>
-          <div class="info"><h4>Ruko Majapahit Square</h4><p>Progres: 45% • 18 pekerja</p></div>
-        </div>
-        <div class="list-item" style="cursor:pointer;" onclick="selectProject('Villa Bukit Hijau')">
-          <div class="icon">🏡</div>
-          <div class="info"><h4>Villa Bukit Hijau</h4><p>Progres: 20% • 12 pekerja</p></div>
-        </div>
+        <div id="projectList"></div>
+        <button class="btn-primary" style="margin-top:8px;" onclick="addProject()">+ Tambah Proyek</button>
         <button class="btn-primary" style="margin-top:8px;" onclick="hideProjectModal()">Tutup</button>
       </div>
     </div>

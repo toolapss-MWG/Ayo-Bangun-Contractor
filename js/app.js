@@ -39,10 +39,23 @@ function selectRole(btn) {
   document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   currentRole = btn.dataset.role;
+
+  // Update default login account when role changes
+  const demoAccounts = {
+    owner: {email: 'owner@ayobangun.id', password: 'Owner@12345'},
+    admin: {email: 'admin@ayobangun.id', password: 'Admin@12345'},
+    mandor: {email: 'mandor@ayobangun.id', password: 'Mandor@12345'}
+  };
+
+  const account = demoAccounts[currentRole];
+  if (account) {
+    document.getElementById('loginEmail').value = account.email;
+    document.getElementById('loginPass').value = account.password;
+  }
 }
 
 async function doLogin() {
-  const email = document.getElementById('loginEmail').value;
+  const email = document.getElementById('loginEmail').value.trim();
   const pass = document.getElementById('loginPass').value;
 
   if (!email || !pass) {
@@ -50,8 +63,12 @@ async function doLogin() {
     return;
   }
 
-  // Simulate login
-  await auth.login(email, pass, currentRole);
+  try {
+    await auth.login(email, pass, currentRole);
+  } catch (err) {
+    showToast('❌ ' + err.message);
+    return;
+  }
 
   document.getElementById('loginScreen').classList.add('hidden');
   document.getElementById('mainApp').classList.remove('hidden');

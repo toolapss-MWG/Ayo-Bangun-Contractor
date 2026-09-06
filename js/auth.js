@@ -59,17 +59,47 @@ class AuthManager {
   }
 
   async login(email, password, role) {
+    if (!PERMISSIONS[role]) {
+      throw new Error('Role login tidak valid');
+    }
+
+    // Firebase Authentication login
+    if (window.firebaseAuth) {
+      try {
+        const result = await window.firebaseAuth.signInWithEmailAndPassword(email, password);
+        const user = result.user;
+
+        let profile = { role, name: this.getNameByRole(role), email: user.email };
+        if (window.db) {
+          const snap = await window.db.collection('users').doc(user.uid).get();
+          if (snap.exists) {
+            const data = snap.data();
+            if (data.role && PERMISSIONS[data.role]) profile.role = data.role;
+            profile.name = data.name || profile.name;
+          }
+        }
+
+        this.currentUser = {
+          uid: user.uid,
+          email: user.email,
+          name: profile.name
+        };
+        this.currentRole = profile.role;
+        this.saveSession();
+        return this.currentUser;
+      } catch (e) {
+        throw new Error('Login Firebase gagal: ' + e.message);
+      }
+    }
+
+    // Fallback demo jika Firebase belum aktif
     const accounts = {
       owner: { email: 'owner@ayobangun.id', password: 'Owner@12345' },
       admin: { email: 'admin@ayobangun.id', password: 'Admin@12345' },
       mandor: { email: 'mandor@ayobangun.id', password: 'Mandor@12345' }
     };
     const account = accounts[role];
-    if (!account) {
-      throw new Error('Role login tidak valid');
-    }
-
-    if (email !== account.email || password !== account.password) {
+    if (!account || email !== account.email || password !== account.password) {
       throw new Error('Email atau password tidak sesuai');
     }
     this.currentUser = { email, uid: 'demo-' + Date.now(), name: this.getNameByRole(role) };
@@ -84,6 +114,9 @@ class AuthManager {
   }
 
   logout() {
+    if (window.firebaseAuth) {
+      window.firebaseAuth.signOut().catch(()=>{});
+    }
     this.currentUser = null;
     this.currentRole = null;
     localStorage.removeItem('ayo_bangun_session');

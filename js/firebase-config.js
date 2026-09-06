@@ -11,10 +11,20 @@ const firebaseConfig = {
 };
 
 let firebaseApp = null;
-if (typeof firebase !== "undefined") {
-  firebaseApp = firebase.initializeApp(firebaseConfig);
-  window.db = firebase.firestore();
-  window.auth = firebase.auth();
+if (typeof firebase !== "undefined" && !firebaseConfig.apiKey.startsWith("YOUR_")) {
+  try {
+    firebaseApp = firebase.initializeApp(firebaseConfig);
+    window.db = firebase.firestore();
+    window.firebaseAuth = firebase.auth();
+  } catch (error) {
+    console.warn("Firebase belum dikonfigurasi, aplikasi berjalan mode lokal:", error);
+    window.db = null;
+    window.firebaseAuth = null;
+  }
+} else {
+  console.warn("Firebase config belum diisi. Menggunakan mode lokal.");
+  window.db = null;
+  window.firebaseAuth = null;
 }
 
 window.FirebaseConfig = { firebaseConfig, firebaseApp };

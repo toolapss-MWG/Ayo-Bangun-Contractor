@@ -65,7 +65,11 @@ class AuthManager {
       mandor: { email: 'mandor@ayobangun.id', password: 'Mandor@12345' }
     };
     const account = accounts[role];
-    if (account && email !== account.email || account && password !== account.password) {
+    if (!account) {
+      throw new Error('Role login tidak valid');
+    }
+
+    if (email !== account.email || password !== account.password) {
       throw new Error('Email atau password tidak sesuai');
     }
     this.currentUser = { email, uid: 'demo-' + Date.now(), name: this.getNameByRole(role) };
@@ -97,10 +101,18 @@ class AuthManager {
   loadSession() {
     const session = localStorage.getItem('ayo_bangun_session');
     if (session) {
-      const data = JSON.parse(session);
-      this.currentUser = data.user;
-      this.currentRole = data.role;
-      this.currentProject = data.project;
+      try {
+        const data = JSON.parse(session);
+        if (data && data.user && PERMISSIONS[data.role]) {
+          this.currentUser = data.user;
+          this.currentRole = data.role;
+          this.currentProject = data.project || null;
+        } else {
+          localStorage.removeItem('ayo_bangun_session');
+        }
+      } catch (e) {
+        localStorage.removeItem('ayo_bangun_session');
+      }
     }
   }
 

@@ -57,6 +57,8 @@ function selectRole(btn) {
 async function doLogin() {
   const email = document.getElementById('loginEmail').value.trim();
   const pass = document.getElementById('loginPass').value;
+  const selected = document.querySelector('.role-btn.active');
+  if (selected) currentRole = selected.dataset.role;
 
   if (!email || !pass) {
     showToast('❌ Email dan password wajib diisi!');
@@ -86,10 +88,19 @@ async function doLogin() {
 
 function doLogout() {
   auth.logout();
-  document.getElementById('mainApp').classList.add('hidden');
-  document.getElementById('loginScreen').classList.remove('hidden');
-  navigateTo('dashboard');
-  showToast('👋 Berhasil keluar');
+  currentRole = 'owner';
+  currentPage = 'dashboard';
+
+  const mainApp = document.getElementById('mainApp');
+  const loginScreen = document.getElementById('loginScreen');
+  if (mainApp) mainApp.classList.add('hidden');
+  if (loginScreen) loginScreen.classList.remove('hidden');
+
+  // Reset pilihan login ke Owner setelah keluar
+  const ownerBtn = document.querySelector('.role-btn[data-role="owner"]');
+  if (ownerBtn) selectRole(ownerBtn);
+
+  showToast('👋 Berhasil logout');
 }
 
 function applyRolePermissions() {

@@ -600,3 +600,5 @@ html, body {
 .section-title{font-weight:800;color:#f0d78c;margin-top:22px}
 .bottom-nav{background:#111827;border-top:1px solid rgba(212,168,83,.2)}
 .nav-item.active{color:#d4a853}
+
+.header-actions{display:flex;align-items:center;gap:8px;margin-left:auto}.logout-top{padding:6px 10px;font-size:12px;cursor:pointer}

@@ -313,3 +313,7 @@ function getAllMaterials() {
   }
   return all;
 }
+
+
+window.MATERIAL_DATABASE = MATERIAL_DATABASE;
+window.getAllMaterials = getAllMaterials;

@@ -34,6 +34,48 @@ const DEMO_WORKERS = [
   { id: 'w8', name: 'Slamet H', role: 'Tukang Batu', group: 'Tukang Batu' },
 ];
 
+
+// ==================== FIRESTORE SYNC LAYER ====================
+const FIRESTORE_COLLECTIONS = {
+  projects: 'projects',
+  users: 'users',
+  attendance: 'attendance',
+  materials: 'materials',
+  materialStock: 'materialStock',
+  materialUsage: 'materialUsage',
+  reports: 'reports',
+  tasks: 'tasks',
+  notifications: 'notifications'
+};
+
+const SyncManager = {
+  enabled: () => !!window.db,
+  collection(name){ return this.enabled() ? window.db.collection(FIRESTORE_COLLECTIONS[name] || name) : null; },
+  async upsert(collection, id, data){
+    const payload = {...data, updatedAt: new Date().toISOString()};
+    if (!this.enabled()) return payload;
+    await window.db.collection(FIRESTORE_COLLECTIONS[collection] || collection).doc(String(id)).set(payload, {merge:true});
+    return payload;
+  },
+  async add(collection, data){
+    const payload = {...data, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()};
+    if (!this.enabled()) return {id: String(Date.now()), ...payload};
+    const ref = await window.db.collection(FIRESTORE_COLLECTIONS[collection] || collection).add(payload);
+    return {id: ref.id, ...payload};
+  },
+  async remove(collection, id){
+    if (!this.enabled()) return true;
+    await window.db.collection(FIRESTORE_COLLECTIONS[collection] || collection).doc(String(id)).delete();
+    return true;
+  },
+  async snapshot(collection, cb){
+    if (!this.enabled()) return null;
+    return window.db.collection(FIRESTORE_COLLECTIONS[collection] || collection).onSnapshot(cb);
+  }
+};
+
+window.SyncManager = SyncManager;
+
 // ==================== AUTH ====================
 function selectRole(btn) {
   document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
@@ -475,3 +517,6 @@ window.addEventListener('offline', () => {
     el.classList.add('offline');
   });
 });
+
+
+window.AYO_FEATURES = { sync: 'firestore', extra: ['stok material','usage log','report material','audit trail','notif','export-ready'] };

@@ -1,33 +1,43 @@
-// Seed default users for Firebase Auth + Firestore
-// Run manually in browser console after Firebase is initialized, or adapt into an admin-only setup page.
+// Seed default users for Firebase Auth + Firestore profiles
+// Run once in browser console after signing in with an owner/admin account.
 
-(async () => {
-  if (!window.firebaseAuth || !window.db) {
-    console.error('Firebase Auth/Firestore belum siap.');
-    return;
-  }
+async function seedDefaultUsers() {
+  if (!window.firebaseAuth || !window.db) throw new Error('Firebase belum siap');
 
-  const defaultUsers = [
+  const auth = window.firebaseAuth;
+  const db = window.db;
+
+  const users = [
     { email: 'owner@ayobangun.id', password: 'Owner@12345', name: 'Pak Owner', role: 'owner' },
     { email: 'admin@ayobangun.id', password: 'Admin@12345', name: 'Admin Office', role: 'admin' },
-    { email: 'mandor@ayobangun.id', password: 'Mandor@12345', name: 'Mandor Budi', role: 'mandor' }
+    { email: 'mandor@ayobangun.id', password: 'Mandor@12345', name: 'Mandor Budi', role: 'mandor' },
   ];
 
-  for (const u of defaultUsers) {
+  const current = auth.currentUser;
+  if (!current) throw new Error('Login dulu memakai akun admin/owner');
+
+  for (const u of users) {
+    let cred;
     try {
-      const cred = await window.firebaseAuth.createUserWithEmailAndPassword(u.email, u.password);
-      await window.db.collection('users').doc(cred.user.uid).set({
-        name: u.name,
-        email: u.email,
-        role: u.role,
-        projectAccess: [],
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      }, { merge: true });
-      console.log('Created:', u.email);
+      cred = await auth.createUserWithEmailAndPassword(u.email, u.password);
     } catch (e) {
-      console.warn('Skip/create failed for', u.email, e.message);
+      if (e.code === 'auth/email-already-in-use') {
+        console.log('Sudah ada:', u.email);
+        continue;
+      }
+      throw e;
     }
+    const uid = cred.user.uid;
+    await db.collection('users').doc(uid).set({
+      email: u.email,
+      name: u.name,
+      role: u.role,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true });
+    console.log('Created:', u.email);
   }
 
-  console.log('Seed selesai.');
-})();
+  console.log('Seed selesai');
+}
+
+window.seedDefaultUsers = seedDefaultUsers;

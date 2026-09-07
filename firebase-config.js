@@ -1,11 +1,6 @@
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+// Firebase compatibility configuration for browser build
+// Uses Firebase compat SDK loaded from index.html
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyBntT312d0m0VFSPkqiDVUomflUWzcKVB4",
   authDomain: "ayobangun-contractor.firebaseapp.com",
@@ -16,6 +11,22 @@ const firebaseConfig = {
   measurementId: "G-01F0KBG41D"
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+window.db = null;
+window.firebaseAuth = null;
+window.firebaseApp = null;
+
+if (typeof firebase !== "undefined" && !firebaseConfig.apiKey.startsWith("YOUR_")) {
+  try {
+    window.firebaseApp = firebase.apps.length ? firebase.app() : firebase.initializeApp(firebaseConfig);
+    window.db = firebase.firestore();
+    window.firebaseAuth = firebase.auth();
+
+    window.firebaseAuth.onAuthStateChanged((user) => {
+      console.log("Firebase auth state:", user ? user.email : "signed out");
+    });
+  } catch (error) {
+    console.warn("Firebase belum dikonfigurasi, aplikasi berjalan mode lokal:", error);
+  }
+} else {
+  console.warn("Firebase config belum diisi. Menggunakan mode lokal.");
+}

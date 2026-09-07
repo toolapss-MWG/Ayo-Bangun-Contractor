@@ -1,0 +1,80 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isUser(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    function userRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+
+    function isOwner() {
+      return isSignedIn() && userRole() == 'owner';
+    }
+
+    function isAdminOrOwner() {
+      return isSignedIn() && (userRole() == 'owner' || userRole() == 'admin');
+    }
+
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && (isOwner() || isUser(userId));
+      allow update: if isSignedIn() && (isOwner() || isUser(userId));
+      allow delete: if isOwner();
+    }
+
+    match /projects/{id} {
+      allow read: if isSignedIn();
+      allow create, update, delete: if isAdminOrOwner();
+    }
+
+    match /materials/{id} {
+      allow read: if isSignedIn();
+      allow create, update, delete: if isAdminOrOwner();
+    }
+
+    match /inventory/{id} {
+      allow read: if isSignedIn();
+      allow create, update, delete: if isAdminOrOwner();
+    }
+
+    match /material_usage/{id} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn();
+      allow update, delete: if isAdminOrOwner();
+    }
+
+    match /attendance/{id} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn();
+      allow update, delete: if isAdminOrOwner();
+    }
+
+    match /daily_target/{id} {
+      allow read: if isSignedIn();
+      allow create, update, delete: if isAdminOrOwner();
+    }
+
+    match /kendala/{id} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn();
+      allow update, delete: if isAdminOrOwner();
+    }
+
+    match /progres/{id} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn();
+      allow update, delete: if isAdminOrOwner();
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

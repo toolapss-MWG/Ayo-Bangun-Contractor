@@ -11,21 +11,25 @@ const firebaseConfig = {
   measurementId: "G-01F0KBG41D"
 };
 
-let firebaseApp = null;
-if (typeof firebase !== "undefined" && !firebaseConfig.apiKey.startsWith("YOUR_")) {
-  try {
-    firebaseApp = firebase.initializeApp(firebaseConfig);
-    window.db = firebase.firestore();
-    window.firebaseAuth = firebase.auth();
-  } catch (error) {
-    console.warn("Firebase belum dikonfigurasi, aplikasi berjalan mode lokal:", error);
-    window.db = null;
-    window.firebaseAuth = null;
-  }
-} else {
-  console.warn("Firebase config belum diisi. Menggunakan mode lokal.");
-  window.db = null;
-  window.firebaseAuth = null;
-}
+window.firebaseApp = null;
+window.firebaseAuth = null;
+window.db = null;
 
-window.FirebaseConfig = { firebaseConfig, firebaseApp };
+(function initFirebase() {
+  try {
+    if (typeof firebase === 'undefined') {
+      console.warn('Firebase SDK belum dimuat. Aplikasi berjalan tanpa Firebase.');
+      return;
+    }
+
+    window.firebaseApp = firebase.apps.length ? firebase.app() : firebase.initializeApp(firebaseConfig);
+    window.firebaseAuth = firebase.auth();
+    window.db = firebase.firestore();
+
+    if (firebase.analytics && typeof firebase.analytics === 'function') {
+      try { firebase.analytics(); } catch (e) {}
+    }
+  } catch (error) {
+    console.warn('Gagal inisialisasi Firebase:', error);
+  }
+})();
